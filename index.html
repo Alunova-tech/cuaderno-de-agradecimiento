@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cuaderno de agradecimiento</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --violet-900: #3f1d6b;
+      --violet-800: #51207e;
+      --violet-700: #6730a1;
+      --violet-500: #8b5bd6;
+      --violet-300: #c7a8f5;
+      --cream: #f6f1ff;
+      --paper: #fdfbf7;
+      --ink: #2b203a;
+      --shadow: rgba(40, 15, 80, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #f6efff 0%, #f2eefb 35%, #f7f7ff 100%);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 40px;
+    }
+
+    .app {
+      width: min(100%, 420px);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    header {
+      text-align: center;
+      padding: 8px 12px;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: var(--violet-900);
+    }
+
+    header p {
+      font-size: 0.95rem;
+      margin-top: 6px;
+      color: #5c4a7a;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-cover {
+      width: 260px;
+      height: 360px;
+      border-radius: 18px 22px 22px 18px;
+      background: linear-gradient(145deg, #6b36b9 0%, #4a1f7a 55%, #5e2fa3 100%);
+      position: relative;
+      box-shadow: 0 24px 45px var(--shadow);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      color: #fdf7ff;
+      transition: transform 0.4s ease;
+    }
+
+    .book-cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.35), transparent 45%),
+        repeating-linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.06) 0,
+          rgba(255, 255, 255, 0.06) 2px,
+          transparent 2px,
+          transparent 6px
+        );
+      mix-blend-mode: screen;
+      opacity: 0.75;
+    }
+
+    .book-cover::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 14px 18px 18px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.12);
+    }
+
+    .book-cover:hover,
+    .book-cover:focus-visible {
+      transform: translateY(-6px) rotate(-0.5deg);
+    }
+
+    .book-cover h2 {
+      font-size: 1.7rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      z-index: 1;
+      position: relative;
+    }
+
+    .book-cover .ribbon {
+      position: absolute;
+      left: 0;
+      top: 28px;
+      width: 100%;
+      height: 36px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+      z-index: 0;
+      opacity: 0.75;
+    }
+
+    .book-cover .spine {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 100%;
+      background: linear-gradient(180deg, #3d175f 0%, #2f0f4d 100%);
+      box-shadow: inset -4px 0 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .open-btn {
+      margin-top: 20px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(120deg, var(--violet-700), var(--violet-500));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 12px 20px rgba(103, 48, 161, 0.3);
+    }
+
+    .open-btn:focus-visible,
+    .open-btn:hover {
+      outline: 2px solid rgba(127, 88, 210, 0.45);
+      outline-offset: 2px;
+    }
+
+    .pages {
+      width: 100%;
+      background: linear-gradient(180deg, #ffffff 0%, #f7f1ff 100%);
+      border-radius: 26px;
+      box-shadow: 0 20px 40px rgba(72, 38, 124, 0.18);
+      padding: 24px 20px 28px;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pages.active {
+      display: flex;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .page {
+      min-height: 300px;
+      background: var(--paper);
+      border-radius: 18px;
+      padding: 20px 18px;
+      box-shadow: inset 0 0 0 1px rgba(120, 90, 160, 0.08);
+      position: relative;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      animation: pageIn 0.35s ease;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    .page h3 {
+      font-size: 1.2rem;
+      color: var(--violet-800);
+    }
+
+    .page p,
+    .page li {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #3e2d55;
+    }
+
+    .page ul {
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .page .note {
+      background: #f3ebff;
+      border-left: 4px solid var(--violet-500);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+    }
+
+    .page-number {
+      font-size: 0.85rem;
+      color: #7a6a96;
+      text-align: right;
+      margin-top: auto;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .controls button {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      background: #ede7fb;
+      color: #4e3a72;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .controls button.primary {
+      background: linear-gradient(120deg, #7a4bcf, #a27bff);
+      color: white;
+    }
+
+    .controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .indicator {
+      font-size: 0.85rem;
+      color: #6b5b84;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateX(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media (min-width: 720px) {
+      body {
+        align-items: center;
+      }
+
+      .app {
+        gap: 32px;
+      }
+
+      .stage {
+        min-height: 460px;
+      }
+
+      .pages {
+        padding: 30px 26px 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Cuaderno de agradecimiento</h1>
+      <p>Un espacio íntimo para celebrar lo vivido y agradecer lo compartido.</p>
+    </header>
+
+    <section class="stage" aria-live="polite">
+      <div class="book-cover" id="bookCover" role="button" tabindex="0" aria-label="Abrir cuaderno de agradecimiento">
+        <span class="spine" aria-hidden="true"></span>
+        <span class="ribbon" aria-hidden="true"></span>
+        <h2>Dedicatoria</h2>
+      </div>
+    </section>
+
+    <section class="pages" id="pages" aria-label="Páginas del cuaderno">
+      <article class="page active" data-page="1">
+        <h3>Preludio / Introducción</h3>
+        <p>
+          Gracias por llegar a mi vida, por compartirme tu ternura, tu risa y un pedacito de tu vida. ✨ Fueron
+          momentos increíbles, fueron momentos muy tiernos para mí; los llevo en mi corazón. 🤍 Todo el tiempo
+          que llegaste a mi vida me enseñó muchas cosas: tu partida y tu llegada. Muchas gracias. 🙏
+        </p>
+        <p>
+          Estoy en tu libro, el que te regalé, y como primera hoja... jeje. 📖😊
+        </p>
+        <div class="note">“Agradecer es volver a elegir la vida con el corazón abierto.” 🌸</div>
+        <div class="page-number">Página 1</div>
+      </article>
+
+      <article class="page" data-page="2">
+        <h3>Índice</h3>
+        <ul>
+          <li>Preludio: La intención de agradecer — pág. 1</li>
+          <li>Capítulo 1: Momentos que iluminan — pág. 3</li>
+          <li>Capítulo 2: Personas que sostienen — pág. 5</li>
+          <li>Capítulo 3: Lecciones que quedaron — pág. 7</li>
+          <li>Capítulo 4: Sueños en construcción — pág. 9</li>
+        </ul>
+        <div class="note">Tip: marca con una estrella aquello que quieras volver a leer.</div>
+        <div class="page-number">Página 2</div>
+      </article>
+
+      <article class="page" data-page="3">
+        <h3>Capítulo 1</h3>
+        <p>
+          Me alegra mucho que me recuerdes con ternura: tus gestos, tu forma tan peculiar de decir las cosas,
+          tu ternura, tu risa, tu lunar... son cosas que las veo con mucha dulzura dentro de mí. 🫶✨
+        </p>
+        <div class="note">Cada detalle quedó guardado con cariño. 💜</div>
+        <div class="page-number">Página 3</div>
+      </article>
+
+      <article class="page" data-page="4">
+        <h3>Capítulo 2</h3>
+        <p>
+          Mi deseo para ti es que vivas una vida libre y plena; las mejores bendiciones para ti y tu familia. 🌿💫
+        </p>
+        <p>
+          Que Nico crezca grande y fuerte, llénalo de todo el amor que puedas. 🧸💛 Me alegra mucho que ya hayas
+          tomado tu decisión. 🌷
+        </p>
+        <div class="note">Te deseo luz en cada camino. ✨</div>
+        <div class="page-number">Página 4</div>
+      </article>
+
+      <article class="page" data-page="5">
+        <h3>Capítulo 3</h3>
+        <p>
+          Respecto por mí, no te preocupes: estaré bien. Estoy en una búsqueda espiritual, tratando de encontrar
+          respuestas a mis miles de preguntas. 🕊️🌌
+        </p>
+        <div class="note">Me abrazo con calma y confianza. 🤍</div>
+        <div class="page-number">Página 5</div>
+      </article>
+
+      <article class="page" data-page="6">
+        <h3>Capítulo 4</h3>
+        <p>
+          PD: Para escribir este mensaje me tomé 40 días pensando en qué podría decir y reflexionando sobre cómo
+          pasaron las cosas últimamente. Quería tomar una decisión, una que me sintiera cómodo. Lo analicé y esa
+          es mi conclusión: “disfruta tu vida”. 🌟
+        </p>
+        <p>
+          La razón por la que te mando esto es para demostrar que fuiste una parte importante en mi vida que
+          merece que se trate con respeto. 💌🙏
+        </p>
+        <div class="note">Gracias por lo vivido y por lo aprendido. ✨</div>
+        <div class="page-number">Página 6</div>
+      </article>
+
+      <div class="indicator" id="pageIndicator">Página 1 de 6</div>
+
+      <div class="controls">
+        <button type="button" id="prevBtn" aria-label="Página anterior">Anterior</button>
+        <button type="button" id="nextBtn" class="primary" aria-label="Página siguiente">Siguiente</button>
+      </div>
+    </section>
+
+    <button class="open-btn" id="openBtn" type="button" aria-label="Abrir el cuaderno">Abrir cuaderno</button>
+  </main>
+
+  <script>
+    const bookCover = document.getElementById("bookCover");
+    const openBtn = document.getElementById("openBtn");
+    const pages = document.getElementById("pages");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const indicator = document.getElementById("pageIndicator");
+    const pageNodes = Array.from(document.querySelectorAll(".page"));
+    let currentPage = 0;
+
+    const updateView = () => {
+      pageNodes.forEach((page, index) => {
+        page.classList.toggle("active", index === currentPage);
+      });
+      indicator.textContent = `Página ${currentPage + 1} de ${pageNodes.length}`;
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = currentPage === pageNodes.length - 1;
+    };
+
+    const openBook = () => {
+      pages.classList.add("active");
+      pages.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+
+    bookCover.addEventListener("click", openBook);
+    bookCover.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openBook();
+      }
+    });
+    openBtn.addEventListener("click", openBook);
+
+    prevBtn.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage -= 1;
+        updateView();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentPage < pageNodes.length - 1) {
+        currentPage += 1;
+        updateView();
+      }
+    });
+
+    updateView();
+  </script>
+</body>
+</html>
